@@ -106,3 +106,84 @@ https://b.com/oauth/token?
 `grant_type`参数为refresh_token表示要求更新令牌  
 `client_id`参数和client_secret用于确认身份  
 `refresh_token`是用来获取新的令牌的令牌  
+
+## OAuth2在GitHub的实际应用
+
+一个应用要求OAuth授权必须先到对方网站登记，让对方知道是谁在请求。
+
+以GitHub为例，先访问[OAuth Apps](https://github.com/settings/applications/new)进行应用登记，登记后在网页上可获取`client_id`和`client_secret`，保存起来用于URL参数填充。
+
+### 获取授权码
+
+假设登记时设定的重定向URL为`https://www.baidu.com`，访问下面这个链接即可获取授权码：  
+
+```html
+https://github.com/login/oauth/authorize?client_id=&redirect_uri=https://www.baidu.com
+```
+
+授权完成在重定向的`https://www.baidu.com`后面拿到code
+
+### 获取令牌
+
+构造获取token请求：
+
+```html
+https://github.com/login/oauth/access_token?client_id=&client_secret=&code=
+```
+
+拿到令牌数据access_token
+
+### 验证token作用
+
+访问用户数据的API：
+
+```html
+https://api.github.com/user
+```
+
+不带上access_token的结果：
+
+```json
+{
+    "message": "Requires authentication",
+    "documentation_url": "https://developer.github.com/v3/users/#get-the-authenticated-user"
+}
+```
+
+在请求头的Authorization中加上access_token再次访问该接口的结果：
+
+```json
+{
+    "login": "Leiothrix",
+    "id": 11772818,
+    "node_id": "MDQ6VXNlcjExNzcyODE4",
+    "avatar_url": "https://avatars1.githubusercontent.com/u/11772818?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Leiothrix",
+    "html_url": "https://github.com/Leiothrix",
+    "followers_url": "https://api.github.com/users/Leiothrix/followers",
+    "following_url": "https://api.github.com/users/Leiothrix/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Leiothrix/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Leiothrix/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Leiothrix/subscriptions",
+    "organizations_url": "https://api.github.com/users/Leiothrix/orgs",
+    "repos_url": "https://api.github.com/users/Leiothrix/repos",
+    "events_url": "https://api.github.com/users/Leiothrix/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Leiothrix/received_events",
+    "type": "User",
+    "site_admin": false,
+    "name": null,
+    "company": null,
+    "blog": "",
+    "location": null,
+    "email": null,
+    "hireable": null,
+    "bio": "break_frog",
+    "public_repos": 21,
+    "public_gists": 0,
+    "followers": 4,
+    "following": 139,
+    "created_at": "2015-04-02T14:39:29Z",
+    "updated_at": "2019-05-09T02:33:58Z"
+}
+```
