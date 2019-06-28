@@ -1,6 +1,10 @@
 # oauth2
 Spring Security Oauth2 实践
 
+## 本项目的愿景
+
+将`oauth2`这个应用开发成一个生长在`Spring Cloud`体系下的可拔插式授权微服务
+
 ## Oauth基本介绍
 Oauth的两种角色：客户端（以A网站为例）和资源所有者（以B网站为例）
 
