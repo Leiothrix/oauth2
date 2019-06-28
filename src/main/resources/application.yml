@@ -3,6 +3,10 @@ spring:
     active: native
   application:
     name: spring-security-oauth2
+  security:
+    user:
+      name: admin
+      password: admin
   datasource:
       username: root
       password: 123456

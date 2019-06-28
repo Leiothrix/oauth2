@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-
 import java.util.Arrays;
 
 /**
