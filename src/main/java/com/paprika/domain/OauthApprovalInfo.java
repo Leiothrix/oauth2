@@ -1,6 +1,7 @@
 package com.paprika.domain;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +16,8 @@ import java.time.LocalDateTime;
 @Table(name = "oauth_approvals")
 public class OauthApprovalInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GenericGenerator(name="idGenerator", strategy="uuid")
+    @GeneratedValue(generator="idGenerator")
     @Column(name = "id", columnDefinition = "varchar(128)")
     private String  id;
 

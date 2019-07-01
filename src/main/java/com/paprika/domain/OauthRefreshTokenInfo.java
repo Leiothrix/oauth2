@@ -1,6 +1,7 @@
 package com.paprika.domain;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -14,7 +15,8 @@ import javax.persistence.*;
 @Table(name = "oauth_refresh_token")
 public class OauthRefreshTokenInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GenericGenerator(name="idGenerator", strategy="uuid")
+    @GeneratedValue(generator="idGenerator")
     @Column(name = "id", columnDefinition = "varchar(128)")
     private String  id;
 

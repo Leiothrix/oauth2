@@ -1,6 +1,9 @@
 package com.paprika.domain;
 
 import lombok.Data;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -11,10 +14,13 @@ import javax.persistence.*;
  */
 @Data
 @Entity
+@DynamicUpdate
+@DynamicInsert
 @Table(name = "oauth_client_details")
 public class OauthClientDetailInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GenericGenerator(name="idGenerator", strategy="uuid")
+//    @GeneratedValue(generator="idGenerator")
     @Column(name = "client_id", columnDefinition = "varchar(128)")
     private String  clientId;
 
