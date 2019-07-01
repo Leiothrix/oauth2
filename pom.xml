@@ -17,7 +17,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<lobmok.version>1.16.20</lobmok.version>
-        <springfox.version>2.6.1</springfox.version>
+        <springfox.version>2.8.0</springfox.version>
         <fastjson.version>1.2.47</fastjson.version>
         <httpclient.version>4.5.3</httpclient.version>
         <druid.version>1.1.0</druid.version>
@@ -35,6 +35,13 @@
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${springfox.version}</version>
+		</dependency>
+
+		<!--用来支持JSR303-->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-bean-validators</artifactId>
 			<version>${springfox.version}</version>
 		</dependency>
 

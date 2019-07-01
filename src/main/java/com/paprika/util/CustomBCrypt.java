@@ -15,9 +15,4 @@ public class CustomBCrypt {
     public String encode(String password){
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
-
-    public static void main(String[] args) {
-        CustomBCrypt customBCrypt = new CustomBCrypt();
-        System.out.println(customBCrypt.encode("xmCRf6"));
-    }
 }
