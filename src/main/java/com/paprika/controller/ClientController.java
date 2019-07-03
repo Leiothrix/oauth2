@@ -9,10 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author adam
@@ -26,19 +23,32 @@ public class ClientController {
     private OauthClientDetailRepository oauthClientDetailRepository;
 
     @Autowired
-    public ClientController(OauthClientDetailRepository oauthClientDetailRepository){
+    public ClientController(OauthClientDetailRepository oauthClientDetailRepository) {
         this.oauthClientDetailRepository = oauthClientDetailRepository;
     }
 
     @ApiOperation(value = "保存第三方应用登记信息")
     @PostMapping("/api/v1/oauth2/registration")
     @ResponseBody
-    public BooleanWrapper saveRegistrationInfo(@RequestBody @ApiParam(name = "OauthClientDetailDto", value = "需要保存的登记信息", required = true)
+    public BooleanWrapper<Void> saveRegistrationInfo(@RequestBody @ApiParam(name = "OauthClientDetailDto", value = "需要保存的登记信息", required = true)
                                                            OauthClientDetailDto oauthClientDetailDto){
-           BooleanWrapper response = new BooleanWrapper();
+           BooleanWrapper<Void> response = new BooleanWrapper<>();
            try{
                OauthClientDetailInfo oauthClientDetailInfo = new OauthClientDetailInfo();
-               oauthClientDetailInfo.setClientId(oauthClientDetailDto.getClientId());
+               String  clientId = oauthClientDetailDto.getClientId();
+               if(clientId != null){
+                   if("".equals(clientId)){
+                       response.setCode(BooleanWrapper.FAIL_CODE);
+                       response.setMessage("应用ID不可为空字符串");
+                       return response;
+                   }
+                   if(oauthClientDetailRepository.existsById(clientId)){
+                       response.setCode(BooleanWrapper.FAIL_CODE);
+                       response.setMessage("该应用ID已被占用");
+                       return response;
+                   }
+               }
+               oauthClientDetailInfo.setClientId(clientId);
                oauthClientDetailInfo.setAuthorizedGrantTypes(oauthClientDetailDto.getAuthorizedGrantTypes());
                oauthClientDetailInfo.setClientSecret(oauthClientDetailDto.getClientSecret());
                oauthClientDetailInfo.setScope(oauthClientDetailDto.getScope());
@@ -52,4 +62,68 @@ public class ClientController {
            }
            return response;
     }
+
+    @ApiOperation(value = "删除第三方应用登记信息")
+    @DeleteMapping("/api/v1/oauth2/registration/{clientId}")
+    @ResponseBody
+    public BooleanWrapper deleteRegistrationInfo(@ApiParam(name = "clientId", value = "第三方应用ID", required = true)
+                                                     @RequestParam(value = "clientId") String clientId) {
+        BooleanWrapper<Void> response = new BooleanWrapper<>();
+        try {
+            oauthClientDetailRepository.deleteById(clientId);
+        }
+        catch (Exception e) {
+            log.error("删除第三方应用登记信息出现异常", e);
+            response.setCode(BooleanWrapper.FAIL_CODE);
+            response.setMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "更新第三方应用登记信息")
+    @PutMapping("/api/v1/oauth2/registration/")
+    @ResponseBody
+    public BooleanWrapper updateRegistrationInfo(@RequestBody @ApiParam(name = "OauthClientDetailDto", value = "需要更新的登记信息", required = true)
+                                                             OauthClientDetailDto oauthClientDetailDto) {
+        BooleanWrapper<Void> response = new BooleanWrapper<>();
+        try {
+            OauthClientDetailInfo oauthClientDetailInfo = new OauthClientDetailInfo();
+            String  clientId = oauthClientDetailDto.getClientId();
+            if(clientId != null && oauthClientDetailRepository.existsById(clientId)){
+                oauthClientDetailInfo.setClientId(clientId);
+                oauthClientDetailInfo.setAuthorizedGrantTypes(oauthClientDetailDto.getAuthorizedGrantTypes());
+                oauthClientDetailInfo.setClientSecret(oauthClientDetailDto.getClientSecret());
+                oauthClientDetailInfo.setScope(oauthClientDetailDto.getScope());
+                oauthClientDetailInfo.setWebServerRedirectUri(oauthClientDetailDto.getWebServerRedirectUri());
+                oauthClientDetailRepository.save(oauthClientDetailInfo);
+            }else {
+                response.setCode(BooleanWrapper.FAIL_CODE);
+                response.setMessage("应用ID非法");
+                return response;
+            }
+        }
+        catch (Exception e) {
+            log.error("更新第三方应用登记信息出现异常", e);
+            response.setCode(BooleanWrapper.FAIL_CODE);
+            response.setMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "查询第三方应用登记信息")
+    @GetMapping("/api/v1/oauth2/registration/{clientId}")
+    @ResponseBody
+    public BooleanWrapper<OauthClientDetailInfo> queryRegistrationInfo(@ApiParam(name = "clientId", value = "第三方应用ID", required = true)
+                                                    @RequestParam(value = "clientId") String clientId){
+        BooleanWrapper<OauthClientDetailInfo> response = new BooleanWrapper<>();
+        try {
+            response.setData(oauthClientDetailRepository.findByClientId(clientId));
+        }catch (Exception e){
+            log.error("保存第三方应用登记信息出现异常", e);
+            response.setCode(BooleanWrapper.FAIL_CODE);
+            response.setMessage(e.getMessage());
+        }
+        return response;
+    }
+
 }
